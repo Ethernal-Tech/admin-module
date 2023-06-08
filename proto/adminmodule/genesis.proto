@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cosmos.adminmodule.adminmodule;
+package cosmos.adminmodule;
 
 import "gogoproto/gogo.proto";
 

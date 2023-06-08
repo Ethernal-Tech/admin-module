@@ -8,7 +8,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	govcodec "github.com/cosmos/cosmos-sdk/x/gov/codec"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1b1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/gogo/protobuf/proto"
 	"gopkg.in/yaml.v2"
 )
@@ -18,7 +20,7 @@ var (
 	_ cdctypes.UnpackInterfacesMessage = &MsgSubmitProposal{}
 )
 
-func NewMsgSubmitProposal(content govtypes.Content, proposer sdk.AccAddress) (*MsgSubmitProposal, error) {
+func NewMsgSubmitProposal(content govtypesv1b1.Content, proposer sdk.AccAddress) (*MsgSubmitProposal, error) {
 	m := &MsgSubmitProposal{
 		Proposer: proposer.String(),
 	}
@@ -30,15 +32,15 @@ func NewMsgSubmitProposal(content govtypes.Content, proposer sdk.AccAddress) (*M
 	return m, nil
 }
 
-func (m *MsgSubmitProposal) GetContent() govtypes.Content {
-	content, ok := m.Content.GetCachedValue().(govtypes.Content)
+func (m *MsgSubmitProposal) GetContent() govtypesv1b1.Content {
+	content, ok := m.Content.GetCachedValue().(govtypesv1b1.Content)
 	if !ok {
 		return nil
 	}
 	return content
 }
 
-func (m *MsgSubmitProposal) SetContent(content govtypes.Content) error {
+func (m *MsgSubmitProposal) SetContent(content govtypesv1b1.Content) error {
 	msg, ok := content.(proto.Message)
 	if !ok {
 		return fmt.Errorf("can't proto marshal %T", msg)
@@ -68,7 +70,7 @@ func (m *MsgSubmitProposal) GetSigners() []sdk.AccAddress {
 }
 
 func (m *MsgSubmitProposal) GetSignBytes() []byte {
-	bz := govtypes.ModuleCdc.MustMarshalJSON(m)
+	bz := govcodec.ModuleCdc.MustMarshalJSON(m)
 	return sdk.MustSortJSON(bz)
 }
 
@@ -88,7 +90,7 @@ func (m *MsgSubmitProposal) ValidateBasic() error {
 	if content == nil {
 		return sdkerrors.Wrap(govtypes.ErrInvalidProposalContent, "missing content")
 	}
-	if !govtypes.IsValidProposalType(content.ProposalType()) {
+	if !govtypesv1b1.IsValidProposalType(content.ProposalType()) {
 		return sdkerrors.Wrap(govtypes.ErrInvalidProposalType, content.ProposalType())
 	}
 	if err := content.ValidateBasic(); err != nil {
@@ -99,6 +101,6 @@ func (m *MsgSubmitProposal) ValidateBasic() error {
 }
 
 func (m MsgSubmitProposal) UnpackInterfaces(unpacker cdctypes.AnyUnpacker) error {
-	var content govtypes.Content
+	var content govtypesv1b1.Content
 	return unpacker.UnpackAny(m.Content, &content)
 }

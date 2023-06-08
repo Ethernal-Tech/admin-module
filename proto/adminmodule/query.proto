@@ -1,5 +1,5 @@
 syntax = "proto3";
-package cosmos.adminmodule.adminmodule;
+package cosmos.adminmodule;
 
 import "google/api/annotations.proto";
 import "cosmos/gov/v1beta1/gov.proto";

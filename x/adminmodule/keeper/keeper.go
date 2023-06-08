@@ -3,22 +3,23 @@ package keeper
 import (
 	"fmt"
 
-	"github.com/tendermint/tendermint/libs/log"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/cosmos/admin-module/x/adminmodule/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	// this line is used by starport scaffolding # ibc/keeper/import
 )
 
 type (
 	Keeper struct {
 		cdc                       codec.Codec
-		storeKey                  sdk.StoreKey
-		memKey                    sdk.StoreKey
-		rtr                       govtypes.Router
-		IsProposalTypeWhitelisted func(govtypes.Content) bool
+		storeKey                  storetypes.StoreKey
+		memKey                    storetypes.StoreKey
+		rtr                       govv1beta1.Router
+		IsProposalTypeWhitelisted func(govv1beta1.Content) bool
 		// this line is used by starport scaffolding # ibc/keeper/attribute
 	}
 )
@@ -26,9 +27,9 @@ type (
 func NewKeeper(
 	cdc codec.Codec,
 	storeKey,
-	memKey sdk.StoreKey,
-	rtr govtypes.Router,
-	isProposalTypeWhitelisted func(govtypes.Content) bool,
+	memKey storetypes.StoreKey,
+	rtr govv1beta1.Router,
+	isProposalTypeWhitelisted func(govv1beta1.Content) bool,
 	// this line is used by starport scaffolding # ibc/keeper/parameter
 ) *Keeper {
 	return &Keeper{
@@ -42,7 +43,7 @@ func NewKeeper(
 }
 
 // Router returns the adminmodule Keeper's Router
-func (k Keeper) Router() govtypes.Router {
+func (k Keeper) Router() govv1beta1.Router {
 	return k.rtr
 }
 

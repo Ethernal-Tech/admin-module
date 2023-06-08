@@ -5,3 +5,7 @@ import (
 )
 
 var _ types.QueryServer = Keeper{}
+
+type Querier struct {
+	Keeper
+}

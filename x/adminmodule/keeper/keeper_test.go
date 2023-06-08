@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"testing"
 
+	tmdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/admin-module/x/adminmodule/keeper"
 	"github.com/cosmos/admin-module/x/adminmodule/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -12,10 +15,8 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
 )
 
 func setupKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
@@ -23,13 +24,13 @@ func setupKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
 	// TODO Add more routes
-	rtr := govtypes.NewRouter()
-	rtr.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler)
+	rtr := govv1beta1.NewRouter()
+	rtr.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler)
 
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
-	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
-	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
 	require.NoError(t, stateStore.LoadLatestVersion())
 
 	registry := codectypes.NewInterfaceRegistry()
@@ -41,7 +42,7 @@ func setupKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		storeKey,
 		memStoreKey,
 		rtr,
-		func(govtypes.Content) bool { return true },
+		func(govv1beta1.Content) bool { return true },
 	)
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 	return k, ctx

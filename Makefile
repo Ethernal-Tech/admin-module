@@ -8,6 +8,20 @@ COSMOS_SDK_VERSION=$(shell cat go.mod | grep cosmos-sdk | cut -d ' ' -f2 | sed '
 ldflags = -X github.com/cosmos/cosmos-sdk/version.AppName=admin-moduled \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(COSMOS_SDK_VERSION)
 
+
+containerProtoVer=0.9.0
+containerProtoImage=ghcr.io/cosmos/proto-builder:$(containerProtoVer)
+containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
+containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
+containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
+
+proto-all: proto-format proto-lint proto-gen
+
+proto-gen:
+	@echo "Generating Protobuf files"
+	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
+		sh ./scripts/protocgen.sh; fi
+
 .PHONY: version
 version:
 	echo $(COSMOS_SDK_VERSION)
