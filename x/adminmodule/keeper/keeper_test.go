@@ -15,7 +15,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/stretchr/testify/require"
 )
 
@@ -24,8 +24,8 @@ func setupKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
 	// TODO Add more routes
-	rtr := govv1beta1.NewRouter()
-	rtr.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler)
+	rtr := govv1types.NewRouter()
+	rtr.AddRoute(govtypes.RouterKey, govv1types.ProposalHandler)
 
 	db := tmdb.NewMemDB()
 	stateStore := store.NewCommitMultiStore(db)
@@ -42,7 +42,7 @@ func setupKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		storeKey,
 		memStoreKey,
 		rtr,
-		func(govv1beta1.Content) bool { return true },
+		func(govv1types.Content) bool { return true },
 	)
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
 	return k, ctx

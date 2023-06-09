@@ -6,26 +6,25 @@ require (
 	github.com/cometbft/cometbft v0.37.1
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/cosmos/cosmos-sdk v0.47.2
-	// github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
-	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	// github.com/regen-network/cosmos-proto v0.3.1
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.4
-	// github.com/tendermint/spm v0.1.9
 	google.golang.org/genproto v0.0.0-20230530153820-e85fd2cbaebc // indirect
 	google.golang.org/grpc v1.55.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
-	github.com/prometheus/client_golang v1.15.1
+	cosmossdk.io/core v0.5.1
+	cosmossdk.io/tools/rosetta v0.2.1
+	github.com/cosmos/cosmos-proto v1.0.0-beta.2
+	github.com/cosmos/gogoproto v1.4.10
+	github.com/cosmos/ibc-go/v7 v7.0.1
 	github.com/spf13/viper v1.16.0
-	github.com/tendermint/tendermint v0.34.14
-	github.com/tendermint/tm-db v0.6.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc
 )
 
@@ -36,7 +35,6 @@ require (
 	cloud.google.com/go/iam v0.13.0 // indirect
 	cloud.google.com/go/storage v1.29.0 // indirect
 	cosmossdk.io/api v0.3.1 // indirect
-	cosmossdk.io/core v0.6.0 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.3 // indirect
 	cosmossdk.io/errors v1.0.0-beta.7 // indirect
 	cosmossdk.io/math v1.0.1 // indirect
@@ -65,11 +63,9 @@ require (
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/cosmos-db v1.0.0 // indirect
-	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
-	github.com/cosmos/gogoproto v1.4.10 // indirect
-	github.com/cosmos/iavl v0.21.1 // indirect
+	github.com/cosmos/iavl v0.20.0 // indirect
 	github.com/cosmos/ics23/go v0.10.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.13.0 // indirect
 	github.com/cosmos/rosetta-sdk-go v0.10.0 // indirect
@@ -142,6 +138,7 @@ require (
 	github.com/petermattis/goid v0.0.0-20230518223814-80aa455d8761 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/prometheus/client_golang v1.15.1 // indirect
 	github.com/prometheus/client_model v0.4.0 // indirect
 	github.com/prometheus/common v0.44.0 // indirect
 	github.com/prometheus/procfs v0.10.1 // indirect
@@ -154,7 +151,6 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
-	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
@@ -181,4 +177,15 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-// replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+replace (
+	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+	// dgrijalva/jwt-go is deprecated and doesn't receive security updates.
+	// See: https://github.com/cosmos/cosmos-sdk/issues/13134
+	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
+	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
+	// See: https://github.com/cosmos/cosmos-sdk/issues/10409
+	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.8.1
+
+	// pin version! 126854af5e6d has issues with the store so that queries fail
+	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+)

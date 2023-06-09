@@ -11,7 +11,7 @@ import (
 	govcodec "github.com/cosmos/cosmos-sdk/x/gov/codec"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypesv1b1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	"github.com/gogo/protobuf/proto"
+	"github.com/cosmos/gogoproto/proto"
 	"gopkg.in/yaml.v2"
 )
 

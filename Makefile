@@ -22,6 +22,13 @@ proto-gen:
 	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
 		sh ./scripts/protocgen.sh; fi
 
+protoVer=0.11.6
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=docker run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
+proto-gen1:
+	@echo "Generating Protobuf files"
+	@$(protoImage) sh ./scripts/protocgen1.sh
+
 .PHONY: version
 version:
 	echo $(COSMOS_SDK_VERSION)

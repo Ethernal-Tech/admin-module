@@ -9,8 +9,8 @@ import (
 	_ "github.com/cosmos/cosmos-proto"
 	types "github.com/cosmos/cosmos-sdk/codec/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -30,7 +30,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// this line is used by starport scaffolding # proto/tx/message
 type MsgDeleteAdmin struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Admin   string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`

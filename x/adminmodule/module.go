@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	// this line is used by starport scaffolding # 1
-
+	"cosmossdk.io/core/appmodule"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -105,6 +105,8 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 // AppModule
 // ----------------------------------------------------------------------------
 
+var _ appmodule.AppModule = AppModule{}
+
 // AppModule implements the AppModule interface for the capability module.
 type AppModule struct {
 	AppModuleBasic
@@ -121,6 +123,14 @@ func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
 	}
 }
 
+// IsOnePerModuleType implements the depinject.OnePerModuleType interface.
+func (am AppModule) IsOnePerModuleType() { // marker
+}
+
+// IsAppModule implements the appmodule.AppModule interface.
+func (am AppModule) IsAppModule() { // marker
+}
+
 // Name returns the capability module's name.
 func (am AppModule) Name() string {
 	return am.AppModuleBasic.Name()
@@ -130,8 +140,8 @@ func (am AppModule) Name() string {
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
 
 // LegacyQuerierHandler returns the capability module's Querier.
-func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
-	return keeper.NewQuerier(am.keeper, legacyQuerierCdc)
+func (am AppModule) LegacyQuerierHandler(_legacyQuerierCdc *codec.LegacyAmino) keeper.Querier {
+	return keeper.NewQuerier(&am.keeper)
 }
 
 // RegisterServices registers a GRPC query service to respond to the

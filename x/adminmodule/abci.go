@@ -8,7 +8,8 @@ import (
 	"github.com/cosmos/admin-module/x/adminmodule/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 // EndBlocker called every block, process inflation, update validator set.
@@ -17,7 +18,7 @@ func EndBlocker(ctx sdk.Context, keeper keeper.Keeper) {
 
 	logger := keeper.Logger(ctx)
 
-	keeper.IterateActiveProposalsQueue(ctx, func(proposal govtypes.Proposal) bool {
+	keeper.IterateActiveProposalsQueue(ctx, func(proposal govv1beta1types.Proposal) bool {
 		var logMsg, tagValue string
 
 		handler := keeper.Router().GetRoute(proposal.ProposalRoute())
@@ -29,7 +30,7 @@ func EndBlocker(ctx sdk.Context, keeper keeper.Keeper) {
 		err := handler(cacheCtx, proposal.GetContent())
 		if err == nil {
 			logMsg = "passed"
-			proposal.Status = govtypes.StatusPassed
+			proposal.Status = govv1beta1types.StatusPassed
 			tagValue = govtypes.AttributeValueProposalPassed
 
 			// The cached context is created with a new EventManager. However, since
@@ -41,7 +42,7 @@ func EndBlocker(ctx sdk.Context, keeper keeper.Keeper) {
 			// write state to the underlying multi-store
 			writeCache()
 		} else {
-			proposal.Status = govtypes.StatusFailed
+			proposal.Status = govv1beta1types.StatusFailed
 			tagValue = govtypes.AttributeValueProposalFailed
 			logMsg = fmt.Sprintf("proposal failed on execution: %s", err)
 		}

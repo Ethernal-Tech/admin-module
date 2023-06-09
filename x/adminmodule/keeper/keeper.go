@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	// this line is used by starport scaffolding # ibc/keeper/import
 )
 
@@ -18,8 +18,8 @@ type (
 		cdc                       codec.Codec
 		storeKey                  storetypes.StoreKey
 		memKey                    storetypes.StoreKey
-		rtr                       govv1beta1.Router
-		IsProposalTypeWhitelisted func(govv1beta1.Content) bool
+		rtr                       govv1types.Router
+		IsProposalTypeWhitelisted func(govv1types.Content) bool
 		// this line is used by starport scaffolding # ibc/keeper/attribute
 	}
 )
@@ -28,8 +28,8 @@ func NewKeeper(
 	cdc codec.Codec,
 	storeKey,
 	memKey storetypes.StoreKey,
-	rtr govv1beta1.Router,
-	isProposalTypeWhitelisted func(govv1beta1.Content) bool,
+	rtr govv1types.Router,
+	isProposalTypeWhitelisted func(govv1types.Content) bool,
 	// this line is used by starport scaffolding # ibc/keeper/parameter
 ) *Keeper {
 	return &Keeper{
@@ -43,7 +43,7 @@ func NewKeeper(
 }
 
 // Router returns the adminmodule Keeper's Router
-func (k Keeper) Router() govv1beta1.Router {
+func (k Keeper) Router() govv1types.Router {
 	return k.rtr
 }
 

@@ -25,16 +25,11 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/cosmos/admin-module/app"
 	"github.com/cosmos/admin-module/app/params"
-	"github.com/cosmos/admin-module/x/adminmodule"
-	adminkeeper "github.com/cosmos/admin-module/x/adminmodule/keeper"
-	admintypes "github.com/cosmos/admin-module/x/adminmodule/types"
 )
 
 // NewRootCmd creates a new root command for admin-moduled. It is called once in the
@@ -57,7 +52,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 	rootCmd := &cobra.Command{
 		Use:   version.AppName,
-		Short: "Wasm Daemon (server)",
+		Short: "AdminModule (server)",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())
@@ -108,8 +103,6 @@ func initAppConfig() (string, interface{}) {
 
 	type CustomAppConfig struct {
 		serverconfig.Config
-
-		Wasm admintypes.WasmConfig `mapstructure:"wasm"`
 	}
 
 	// Optionally allow the chain developer to overwrite the SDK's default
@@ -132,11 +125,9 @@ func initAppConfig() (string, interface{}) {
 
 	customAppConfig := CustomAppConfig{
 		Config: *srvCfg,
-		Wasm:   admintypes.DefaultWasmConfig(),
 	}
 
-	customAppTemplate := serverconfig.DefaultConfigTemplate +
-		admintypes.DefaultConfigTemplate()
+	customAppTemplate := serverconfig.DefaultConfigTemplate
 
 	return customAppTemplate, customAppConfig
 }
@@ -150,7 +141,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		pruning.PruningCmd(newApp),
 	)
 
-	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, appExport, addModuleInitFlags)
+	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, appExport, crisis.AddModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
@@ -165,10 +156,10 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	rootCmd.AddCommand(rosettaCmd.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Marshaler))
 }
 
-func addModuleInitFlags(startCmd *cobra.Command) {
-	crisis.AddModuleInitFlags(startCmd)
-	adminmodule.AddModuleInitFlags(startCmd)
-}
+// func addModuleInitFlags(startCmd *cobra.Command) {
+// 	crisis.AddModuleInitFlags(startCmd)
+// 	adminmodule.AddModuleInitFlags(startCmd)
+// }
 
 // genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter
 func genesisCommand(encodingConfig params.EncodingConfig, cmds ...*cobra.Command) *cobra.Command {
@@ -238,18 +229,12 @@ func newApp(
 ) servertypes.Application {
 	baseappOptions := server.DefaultBaseappOptions(appOpts)
 
-	var wasmOpts []adminmodule.Option
-	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
-		wasmOpts = append(wasmOpts, adminkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
-	}
-
-	return app.NewWasmApp(
-		logger, db, traceStore, true,
-		app.GetEnabledProposals(),
+	app := app.New(
+		logger, db, traceStore, true, nil,
 		appOpts,
-		wasmOpts,
 		baseappOptions...,
 	)
+	return &app
 }
 
 // appExport creates a new wasm app (optionally at a given height) and exports state.
@@ -263,7 +248,6 @@ func appExport(
 	appOpts servertypes.AppOptions,
 	modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
-	var wasmApp *app.WasmApp
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {
 		return servertypes.ExportedApp{}, errors.New("application home is not set")
@@ -278,22 +262,16 @@ func appExport(
 	viperAppOpts.Set(server.FlagInvCheckPeriod, 1)
 	appOpts = viperAppOpts
 
-	var emptyWasmOpts []adminmodule.Option
-	wasmApp = app.NewWasmApp(
-		logger,
-		db,
-		traceStore,
-		height == -1,
-		app.GetEnabledProposals(),
+	app := app.New(
+		logger, db, traceStore, height == -1, nil,
 		appOpts,
-		emptyWasmOpts,
 	)
 
 	if height != -1 {
-		if err := wasmApp.LoadHeight(height); err != nil {
+		if err := app.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	}
 
-	return wasmApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
+	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
 }

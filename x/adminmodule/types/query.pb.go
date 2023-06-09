@@ -7,8 +7,8 @@ import (
 	context "context"
 	fmt "fmt"
 	v1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	grpc1 "github.com/gogo/protobuf/grpc"
-	proto "github.com/gogo/protobuf/proto"
+	grpc1 "github.com/cosmos/gogoproto/grpc"
+	proto "github.com/cosmos/gogoproto/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -29,7 +29,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// this line is used by starport scaffolding # 3
 type QueryAdminsRequest struct {
 }
 

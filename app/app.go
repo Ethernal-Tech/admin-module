@@ -11,6 +11,7 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	tmos "github.com/cometbft/cometbft/libs/os"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -224,20 +225,20 @@ type App struct {
 	configurator module.Configurator
 }
 
-// New returns a reference to an initialized Gaia.
+// New returns a reference to an initialized AdminModule.
 func New(
 	logger log.Logger,
 	db dbm.DB,
 	traceStore io.Writer,
 	loadLatest bool,
 	skipUpgradeHeights map[int64]bool,
-	homePath string,
-	invCheckPeriod uint,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) App {
 
 	encodingConfig := MakeEncodingConfig()
+	homePath := cast.ToString(appOpts.Get(flags.FlagHome))
+	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
 
 	appCodec := encodingConfig.Marshaler
 	legacyAmino := encodingConfig.Amino
