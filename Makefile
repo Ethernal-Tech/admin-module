@@ -9,25 +9,13 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.AppName=admin-moduled \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(COSMOS_SDK_VERSION)
 
 
-containerProtoVer=0.9.0
-containerProtoImage=ghcr.io/cosmos/proto-builder:$(containerProtoVer)
-containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
-containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
-containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
-
-proto-all: proto-format proto-lint proto-gen
-
-proto-gen:
-	@echo "Generating Protobuf files"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
-		sh ./scripts/protocgen.sh; fi
 
 protoVer=0.11.6
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=docker run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 proto-gen1:
 	@echo "Generating Protobuf files"
-	@$(protoImage) sh ./scripts/protocgen1.sh
+	@$(protoImage) sh ./scripts/protocgen.sh
 
 .PHONY: version
 version:
